@@ -14,7 +14,7 @@ export class JwtRefreshStratery extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => req?.cookies?.['refreshToken'] as string,
       ]),
-      secretOrKey: config.get<string>('JWT_ACCESS_SECRET')!,
+      secretOrKey: config.get<string>('JWT_REFRESH_SECRET')!,
       passReqToCallback: true,
     });
   }

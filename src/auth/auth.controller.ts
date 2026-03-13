@@ -39,7 +39,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { accessToken: token.refreshToken };
+    return { accessToken: token.accessToken };
   }
 
   @Post('refresh')
@@ -49,6 +49,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const refreshToken = req.cookies['refreshToken'] as string;
+
     if (!refreshToken) throw new Error();
 
     const user = req.user as { sub: string };
@@ -61,7 +62,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { accessToken: token.refreshToken };
+    return { accessToken: token.accessToken };
   }
 
   @Post('logout')

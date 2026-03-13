@@ -26,7 +26,7 @@ export class AuthService {
       where: { userName: signup.userName },
     });
 
-    if (!exit) throw new ConflictException('Không tìm được người dùng');
+    if (exit) throw new ConflictException('tên đăng nhập đã tồn tại');
 
     const hassedPassword = await bcrypt.hash(signup.password, 10);
 
@@ -92,12 +92,16 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET')!,
-        expiresIn: '15m',
+        expiresIn:
+          this.configService.get<string>('JWT_EXPIRES_ACCESS') ??
+          ('15m' as any),
       }),
 
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET')!,
-        expiresIn: '7d',
+        expiresIn:
+          this.configService.get<string>('JWT_EXPIRES_REFRESH') ??
+          ('7d' as any),
       }),
     ]);
 
