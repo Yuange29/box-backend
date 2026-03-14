@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,12 +12,15 @@ import { Repository } from 'typeorm';
 import { SignUp } from './dto/signup.dto';
 import * as bcrypt from 'bcrypt';
 import { SignIn } from './dto/signin.dto';
+import { Role } from 'src/roles/roles.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -28,11 +32,18 @@ export class AuthService {
 
     if (exit) throw new ConflictException('tên đăng nhập đã tồn tại');
 
+    const userRole = await this.roleRepository.findOne({
+      where: { name: 'USER' },
+    });
+
+    if (!userRole) throw new NotFoundException('Role USER is not exist');
+
     const hassedPassword = await bcrypt.hash(signup.password, 10);
 
     const newUser = this.userRepository.create({
       ...signup,
       password: hassedPassword,
+      roles: [userRole],
     });
 
     await this.userRepository.save(newUser);
@@ -87,7 +98,14 @@ export class AuthService {
   }
 
   private async generateToken(user: User) {
-    const payload = { sub: user.userId, name: user.userName };
+    const userWithRole = await this.userRepository.findOne({
+      where: { userId: user.userId },
+      relations: ['roles'],
+    });
+
+    const roles = userWithRole?.roles?.map((r) => r.name) ?? [];
+
+    const payload = { sub: user.userId, name: user.userName, roles: roles };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {

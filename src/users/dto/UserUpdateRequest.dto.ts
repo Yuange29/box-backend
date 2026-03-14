@@ -1,14 +1,15 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class UserUpdateRequest {
   @IsOptional()
   @MinLength(3)
   userNickName?: string;
-
-  @IsOptional()
-  @MinLength(6)
-  @IsString()
-  userName?: string;
 
   @IsOptional()
   @MinLength(2)
@@ -17,4 +18,9 @@ export class UserUpdateRequest {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  roleNames?: string[];
 }
