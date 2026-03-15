@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { SeedModule } from './databbase/seed.module';
+import { CategoriesModule } from './categories/categories.module';
+import { FeesModule } from './fees/fees.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { SeedModule } from './databbase/seed.module';
     RolesModule,
     PermissionsModule,
     SeedModule,
+    CategoriesModule,
+    FeesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
