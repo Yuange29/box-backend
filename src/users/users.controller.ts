@@ -14,34 +14,32 @@ import { UserUpdateRequest } from './dto/UserUpdateRequest.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { CurrentUser } from 'src/auth/decorators/currentUser.decorator';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   findAllUsers() {
     return this.userService.findAll();
   }
 
-  @Get(':userId')
-  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Get('me')
   @Roles('USER', 'ADMIN')
-  getUser(@Param('userId') userId: string) {
-    return this.userService.findUserById(userId);
+  getUser(@CurrentUser() user: { userId: string }) {
+    return this.userService.findUserById(user.userId);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('USER', 'ADMIN')
   createUser(@Body() createUserRequest: UserCreationRequest) {
     return this.userService.createUser(createUserRequest);
   }
 
   @Patch(':userId')
-  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('USER', 'ADMIN')
   updateUser(
     @Param('userId') userId: string,
@@ -51,7 +49,6 @@ export class UsersController {
   }
 
   @Delete(':userId')
-  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('USER', 'ADMIN')
   deleteUser(@Param('userId') userId: string) {
     return this.userService.deleteUser(userId);
