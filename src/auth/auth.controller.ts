@@ -32,12 +32,7 @@ export class AuthController {
   ) {
     const token = await this.authService.signIn(signIn);
 
-    res.cookie('refreshToken', token.refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('refreshToken', token.refreshToken, this.cookie);
 
     return { accessToken: token.accessToken };
   }
@@ -55,12 +50,7 @@ export class AuthController {
     const user = req.user as { sub: string };
     const token = await this.authService.refreshToken(user.sub, refreshToken);
 
-    res.cookie('refreshToken', token.refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('refreshToken', token.refreshToken, this.cookie);
 
     return { accessToken: token.accessToken };
   }
@@ -80,4 +70,11 @@ export class AuthController {
   getMe(@CurrentUser() user: { userId: string; userName: string }) {
     return user;
   }
+
+  private cookie = {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none' as const,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
 }
