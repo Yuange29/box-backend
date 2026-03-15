@@ -21,10 +21,10 @@ import { UpdateFeeRequest } from './dto/update-fee.dto';
 export class FeesController {
   constructor(private readonly feeService: FeesService) {}
 
-  @Get(':userId')
+  @Get()
   @Roles('USER', 'ADMIN')
-  getUserFee(@Param('userId') userId: string) {
-    return this.feeService.getUserFee(userId);
+  getUserFee(@CurrentUser() user: { userId: string }) {
+    return this.feeService.getUserFee(user.userId);
   }
 
   @Post()
