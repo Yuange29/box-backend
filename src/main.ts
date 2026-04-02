@@ -25,7 +25,11 @@ async function bootstrap() {
   const port = configService.get<number>('PORT') ?? 3000;
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://storage-taupe-kappa.vercel.app'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:8081',
+      'https://storage-taupe-kappa.vercel.app',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
